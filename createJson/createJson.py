@@ -31,14 +31,16 @@ def read_attributes(input_attrib_file, temp_text_data, type_dataset):
             #print("PREDICTION: ", type_dataset)
             id_variant, gene, variant = line.split(',')
             text = temp_text_data[id_variant]['text']
-            temp_text_data[id_variant] = {'text': text, 
+            temp_text_data[id_variant] = {'id': id_variant,
+                                          'text': text, 
                                           'gene': gene, 
                                           'variation': variant[:-1]}
         else: 
             #print("TRAINING: ", type_dataset)
             id_variant, gene, variant, v_class = line.split(',')
             text = temp_text_data[id_variant]['text']
-            temp_text_data[id_variant] = {'text': text, 
+            temp_text_data[id_variant] = {'id': id_variant,
+                                         'text': text, 
                                          'gene': gene, 
                                          'variation': variant, 
                                          'class': v_class[:-1]}
