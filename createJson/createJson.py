@@ -13,7 +13,10 @@ def read_text(input_text_file):
         line_pieces = line.split('||')
         id_line = line_pieces[0]
         line_content = line_pieces[1][:-1]
-        file_data[id_line] = {'text': line_content}
+        if len(line_content) > 5:
+            file_data[id_line] = {'text': line_content}
+        else:
+            print(id_line, ": Does not contain text")
     return file_data
 
 
@@ -30,20 +33,26 @@ def read_attributes(input_attrib_file, temp_text_data, type_dataset):
         if (type_dataset == 'test'):
             #print("PREDICTION: ", type_dataset)
             id_variant, gene, variant = line.split(',')
-            text = temp_text_data[id_variant]['text']
-            temp_text_data[id_variant] = {'id': id_variant,
-                                          'text': text, 
-                                          'gene': gene, 
-                                          'variation': variant[:-1]}
+            if (id_variant in temp_text_data):
+                text = temp_text_data[id_variant]['text']
+                temp_text_data[id_variant] = {'id': id_variant,
+                                              'text': text, 
+                                              'gene': gene, 
+                                              'variation': variant[:-1]}
+            else:
+                print(id_variant, "not available")
         else: 
             #print("TRAINING: ", type_dataset)
             id_variant, gene, variant, v_class = line.split(',')
-            text = temp_text_data[id_variant]['text']
-            temp_text_data[id_variant] = {'id': id_variant,
-                                         'text': text, 
-                                         'gene': gene, 
-                                         'variation': variant, 
-                                         'class': v_class[:-1]}
+            if (id_variant in temp_text_data):
+                text = temp_text_data[id_variant]['text']
+                temp_text_data[id_variant] = {'id': id_variant,
+                                              'text': text, 
+                                              'gene': gene, 
+                                              'variation': variant, 
+                                              'class': v_class[:-1]}
+            else:
+                print(id_variant, "not available")
     return temp_text_data
 
 
