@@ -19,12 +19,14 @@ python3 ./extract_total_pdfs.py pdfs_in_warcs.txt responses_in_warcs.txt docx_in
 ```
 The output would look like follows:
 ```
-Extracting total pdfs from: /home/crosas/tmp/NLP/encomienda/counts/pdfs_in_warcs.txt
-Extracting total responses from: /home/crosas/tmp/NLP/encomienda/counts/responses_in_warcs.txt
-Extracting total docx from: /home/crosas/tmp/NLP/encomienda/counts/docxs_in_warcs.txt
-For: 818 urls, there are: 3120624 responses
-For: 818 urls, there are: 7069 pdfs
-That represents a 0.22652520777895702% of the links
-For: 818 urls, there are: 8667 docx
-That represents a 0.2777329149554704% of the links
+$ python3 ./extract_total_pdfs.py pdfs_in_warcs.txt responses_in_warcs.txt docxs_in_warcs.txt
+
+Extracting total pdfs from: ./pdfs_in_warcs.txt
+Extracting total responses from: ./responses_in_warcs.txt
+Extracting total docx from: ./docxs_in_warcs.txt
+For: 2335 urls, there are: 18361337 responses
+For: 2335 urls, there are: 18294 pdfs
+That represents a 0.09963326744670065% of the links
+For: 2335 urls, there are: 30177 docx
+That represents a 0.16435077685246993% of the links
 ```
