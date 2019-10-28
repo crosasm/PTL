@@ -1,11 +1,20 @@
+''' 
+   Beautiful Soup from BSC for BNE
+   author: Joaquim More
+   date: october 2019
+
+   input: Gziped WARC file
+   output: Json with Headers and Paragrapsh from WARC file
+'''
+import sys
 import codecs
-from selectolax.parser import HTMLParser
 import warc
 import gzip
-from time import time
 import re
 import json
 import codecs
+from selectolax.parser import HTMLParser
+from time import time
 
 def splitAtUpperCase(s):
     for i in range(len(s)-1)[::-1]:
@@ -24,6 +33,7 @@ def clean_text(text2clean):
     cleaned_text = splitAtUpperCase(cleaned_text) #PaísPortadaOpinión -> País Portada Opinión
     return cleaned_text
  
+
 def parse_selectolax(html):
     tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a']
     tree = HTMLParser(html)
@@ -64,7 +74,7 @@ def read_doc(record, parser=parse_selectolax):
             paragraphs, heads, titles = parser(html)
     return url, paragraphs, heads, titles
 
-def process_warc(file_name, parser):
+def process_warc(file_name, parser, file_data):
     warc_file = warc.open(file_name, 'rb')
     t0 = time()
     n_documents = 0
@@ -83,19 +93,43 @@ def process_warc(file_name, parser):
 
 
 #Diccionario con la información
-file_data = {}    
+#file_data = {}    
 
-file_name = "/home/quim/BSC/ENCOMIENDA/BNE/32970-10-20190730121106683-00000-HDLS011.bne.local.warc.gz"
+#file_name = "./inputs/32970-10-20190730121106683-00000-HDLS011.bne.local.warc.gz"
 
 #Proceso de limpiado
-process_warc(file_name, parse_selectolax)
+#process_warc(file_name, parse_selectolax)
 
 #Output (formato JSON)
-output_json = '32970-10-20190730121106683-00000-HDLS011.bne.local.json'
+#output_json = '32970-10-20190730121106683-00000-HDLS011.bne.local.json'
 
 #Escritura output
-with codecs.open(output_json, "w", encoding='utf-8') as write_file:
-    for record in file_data.values():
-        write_file.write(json.dumps(record, ensure_ascii=False))
-        write_file.write("\n")
+#with codecs.open(output_json, "w", encoding='utf-8') as write_file:
+#    for record in file_data.values():
+#        write_file.write(json.dumps(record, ensure_ascii=False))
+#        write_file.write("\n")
 
+def main():
+    print("Main Program reading warcs")
+    try:
+          print(sys.argv[1])
+    except:
+          print("One WARC file expected")
+    else:      
+        print("Let's work with the WARC")
+        
+        file_data = {}
+        file_name = sys.argv[1]
+        output_json = file_name[:-8] + '.json'
+
+        file_data = process_warc(file_name, parse_selectolax, file_data)
+        
+        with codecs.open(output_json, "w", encoding='utf-8') as write_file:
+            for record in file_data.values():
+                write_file.write(json.dumps(record, ensure_ascii=False))
+                write_file.write("\n")
+
+        print("File {} Processed...".format(file_name))
+
+if __name__ == '__main__':
+    main()
