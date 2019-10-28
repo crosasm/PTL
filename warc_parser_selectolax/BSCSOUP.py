@@ -16,6 +16,11 @@ import codecs
 from selectolax.parser import HTMLParser
 from time import time
 
+
+# Diccionario con la información
+file_data = {}
+
+
 def splitAtUpperCase(s):
     for i in range(len(s)-1)[::-1]:
         if s[i].isupper() and s[i+1].islower():
@@ -25,7 +30,7 @@ def splitAtUpperCase(s):
     return " ".join(s.split())
 
 
-#De momento no llamamos a esta función que limpia el texto.
+# De momento no llamamos a esta función que limpia el texto.
 def clean_text(text2clean):
     cleaned_text = text2clean.replace('\n', ' ')
     cleaned_text = cleaned_text.replace('\t', ' ')
@@ -57,8 +62,10 @@ def parse_selectolax(html):
                 heads.append(str(node.text()))
             if selector == 'h6':
                 heads.append(str(node.text()))
-            if selector == 'a' and 'href' in node.attributes and 'title' in node.attributes:
-                 links.append(str(node.attributes['href']) + "\|" + str(node.attributes['title'])) #url | titulo de noticia, etc. a la que la url apunta      
+            if (selector == 'a' and 'href' in node.attributes and 'title' in node.attributes):
+                 links.append(str(node.attributes['href']) + 
+                              "\|" + str(node.attributes['title'])) 
+                 #url | titulo de noticia, etc. a la que la url apunta      
 
     return "<p>".join(paragraphs), "<h>".join(heads), "<t>".join(links)
 
@@ -74,41 +81,29 @@ def read_doc(record, parser=parse_selectolax):
             paragraphs, heads, titles = parser(html)
     return url, paragraphs, heads, titles
 
-def process_warc(file_name, parser, file_data):
+def process_warc(file_name, parser):
+    
     warc_file = warc.open(file_name, 'rb')
-    t0 = time()
     n_documents = 0
+    
+    t0 = time()
+
     for i, record in enumerate(warc_file):
         url, paragraphs, heads, titles = read_doc(record, parser)
-        if not url:
-            continue
-        else:
+        if url:
             if len(paragraphs) >  3 or len(heads) > 3 or len(titles) > 3:
-               n_documents += 1
-               file_data[i] = {'url': url, 'p': paragraphs, 'heads': heads, 'titles': titles}
+                n_documents += 1
+                file_data[i] = {'url': url, 
+                                'p': paragraphs,
+                                'heads': heads, 
+                                'titles': titles}
 
 
     print('Parser: %s' % parser.__name__)
     print('Parsing took %s seconds and produced %s documents' % (time() - t0, n_documents))
 
 
-#Diccionario con la información
-#file_data = {}    
-
-#file_name = "./inputs/32970-10-20190730121106683-00000-HDLS011.bne.local.warc.gz"
-
-#Proceso de limpiado
-#process_warc(file_name, parse_selectolax)
-
-#Output (formato JSON)
-#output_json = '32970-10-20190730121106683-00000-HDLS011.bne.local.json'
-
-#Escritura output
-#with codecs.open(output_json, "w", encoding='utf-8') as write_file:
-#    for record in file_data.values():
-#        write_file.write(json.dumps(record, ensure_ascii=False))
-#        write_file.write("\n")
-
+# MAIN PROGRAM
 def main():
     print("Main Program reading warcs")
     try:
@@ -118,11 +113,10 @@ def main():
     else:      
         print("Let's work with the WARC")
         
-        file_data = {}
         file_name = sys.argv[1]
         output_json = file_name[:-8] + '.json'
 
-        file_data = process_warc(file_name, parse_selectolax, file_data)
+        process_warc(file_name, parse_selectolax)
         
         with codecs.open(output_json, "w", encoding='utf-8') as write_file:
             for record in file_data.values():
